@@ -1,0 +1,408 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+    background-color: rgba(240, 240, 240, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+::backdrop {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: black;
+    color: white;
+    padding: 0.5rem 1rem;
+    width: 100%;
+    margin-bottom: 3rem;
+}
+
+header > div {
+    font-size: 2rem;
+    font-weight: 900;
+}
+
+main {
+    width: 100%;
+    max-width: 1280px;
+    background-color: white;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 2rem;
+}
+
+footer {
+    margin-top: 3rem;
+}
+
+h1 {
+    font-size: 3rem;
+    margin: 0px 0px 1rem 0px;
+    text-align: center;
+}
+
+h2 {
+    font-size: 2.5rem;
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+}
+
+nav {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+nav a {
+    padding: 0.4rem 1rem;
+    background-color: orange;
+    color: black;
+    border-radius: 15px;
+    text-decoration: none;
+}
+
+nav a:hover {
+    background-color: yellow;
+    color: black;
+    box-shadow: 0px 0px 12px yellow;
+}
+
+nav a.current {
+    font-weight: 700;
+    background-color: rgb(90, 162, 190);
+    color: white;
+}
+
+nav a.current:hover {
+    background-color: rgb(0, 238, 255);
+    color: white;
+    box-shadow: 0px 0px 12px rgb(0, 238, 255);
+    ;
+}
+
+.student-list {
+    color: black;
+}
+
+.student-row {
+    display: grid;
+    grid-template-columns: 2fr 2fr 2fr 2fr 1fr;
+    grid-template-areas: "student-fname student-lname student-city student-courses student-edit";
+    gap: 0px;
+    padding: 0.1rem;
+}
+
+.student-row > div {
+    display: flex;
+    align-items: center;
+    padding: 0.3rem 1rem;
+}
+
+.student-fname {
+    grid-area: student-fname;
+    background-color: darkgrey;
+}
+
+.student-lname {
+    grid-area: student-lname;
+    background-color: grey;
+    min-width: 6rem;
+}
+
+.student-city {
+    grid-area: student-city;
+    background-color: lightblue;
+}
+
+.student-courses {
+    grid-area: student-courses;
+    background-color: lightgray;
+    font-size: 0.9em;
+}
+
+.student-edit {
+    grid-area: student-edit;
+    display: flex;
+    background-color: transparent;
+    gap: 0.5rem;
+}
+
+.student-edit button {
+    border: 0;
+    background-color: black;
+    color: white;
+    border-radius: 15px;
+    padding: 0.4rem 1rem;
+    cursor: pointer;
+}
+
+.student-edit button:hover {
+    color: yellow;
+    background-color: rgba(80, 80, 80, 1);
+    font-weight: 700;
+}
+
+.student-edit button img {
+    filter: invert(1);
+    width: 1rem;
+    height: 1rem;
+}
+
+
+
+#student-new-form {
+    display: flex;
+    justify-content: flex-start;
+    gap: 0.8rem;
+}
+
+#student-new-form > div {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+#student-new-form label {
+    font-size: 0.9em;
+    font-weight: 700;
+}
+
+#student-new-form > button {
+    min-width: fit-content;
+    border: 0;
+    background-color: black;
+    color: white;
+    border-radius: 15px;
+    padding: 0.3rem 1rem;
+}
+
+.heading {
+    font-weight: bold;
+    font-size: 1.1em;
+    background-color: black;
+    color: white;
+}
+
+.student-new {
+    background-color: lightgray;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+#student-edit-dialog {
+    padding: 2rem;
+
+}
+
+#student-edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.student-edit-dialog h2 {
+    margin: 0;
+}
+
+#student-edit-form label {
+    display: block;
+    font-size: 0.9em;
+    font-weight: 700;
+}
+
+#student-edit-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+#student-edit-buttons button:first-of-type {
+    font-weight: 700;
+    font-size: 1.1em;
+    border: 3px solid black;
+    border-radius: 4px;
+}
+
+#course-student-remove-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.course-student-line {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas: "course-student-button course-student-name";
+    align-items: center;
+    gap: 0.5rem;
+    background-color: lightgray;
+    padding: 0.3rem;
+}
+
+.course-student-name {
+    grid-area: course-student-name;
+}
+
+
+.course-student-button {
+    grid-area: course-student-button;
+}
+
+.course-student-button button {
+    background-color: transparent;
+    border: 0;
+    padding: 2px 0px 0px 0px;
+    cursor: pointer;
+}
+
+.course-student-button button img {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.course-student-button button:hover img {
+    filter: invert(11%) sepia(93%) saturate(7433%) hue-rotate(360deg) brightness(95%) contrast(109%);
+}
+
+.course-students-add {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 2rem;
+}
+
+#course-students-add-form {
+    display: inline-flex;
+    justify-content: center;
+    align-items: stretch;
+    padding: 0;
+    width: fit-content;
+}
+
+#course-students-add-form select {
+    background-color: rgb(40, 57, 80);
+    color: white;
+    padding: 0px 1rem;
+    height: 2rem;
+    border: 0;
+    border-radius: 15px 0px 0px 15px;
+    outline: 0;
+}
+
+#course-students-add-form button {
+    background-color: rgb(40, 57, 80);
+    color: white;
+    padding: 0px 1rem;
+    height: 2rem;
+    border: 0;
+    border-radius: 0px 15px 15px 0px;
+    outline: 0;
+    cursor: pointer;
+}
+
+#course-students-add-form button:hover {
+    background-color: orange;
+    color: black;
+}
+
+#course-controls-form {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0px;
+}
+
+.course-controls {
+    display: inline-flex;
+    align-items: center;
+    padding: 0px 1rem;
+}
+
+.course-controls select {
+    padding: 0.2rem 1rem;
+    background-color: rgb(40, 57, 80);
+    color: white;
+    border: 0;
+    border-radius: 15px 0px 0px 15px;
+    height: 2rem;
+    outline: 0;
+}
+
+.course-controls button {
+    background-color: black;
+    color: white;
+    padding: 0.2rem 1rem;
+    margin: 0;
+    border: 0;
+    height: 2rem;
+    outline: 0;
+    cursor: pointer;
+}
+
+.course-controls button:first-of-type {
+    background-color: rgb(40, 57, 80);
+}
+
+.course-controls button:last-of-type {
+    border-radius: 0px 15px 15px 0px;
+}
+
+.course-controls button:hover {
+    background-color: orange;
+    color: black;
+}
+
+.course-info-studentlist {
+    display: flex;
+    flex-direction: column;
+}
+
+.course-info-students {
+    margin-top: 2rem;
+}
+
+.no-course-students {
+    background-color: rgba(0, 0, 139, 0.6);
+    color: white;
+    font-weight: 700;
+    padding: 0.6rem 1.2rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    width: fit-content;
+}
+
+.course-info h2 {
+    margin-top: 3rem;
+}
+
+
+#create-course-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+#create-course-form h3 {
+    text-align: center;
+}
+
+#create-course-form label {
+    font-weight: 700;
+    font-size: 0.9em;
+}
+
+#create-course-form textarea {
+    min-width: 270px;
+}
