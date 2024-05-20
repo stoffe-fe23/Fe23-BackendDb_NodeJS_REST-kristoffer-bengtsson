@@ -6,10 +6,10 @@
 
         <form id="student-admin-form">
             <div class="student-list">
-                <div class="student-row">
-                    <div class="heading student-fname">Firstname</div>
-                    <div class="heading student-lname">Lastname</div>
-                    <div class="heading student-city">City</div>
+                <div class="student-row table-header">
+                    <div class="heading student-fname<%= sortBy == "firstname" ? (sortOrder == "DESC" ? " desc" : " asc") : "" %>"><a href="/students?sortby=firstname&sortorder=<%= sortOrder == "DESC" ? "asc" : "desc" %>">First name</a></div>
+                    <div class="heading student-lname<%= sortBy == "lastname" ? (sortOrder == "DESC" ? " desc" : " asc") : "" %>"><a href="/students?sortby=lastname&sortorder=<%= sortOrder == "DESC" ? "asc" : "desc" %>">Last name</a></div>
+                    <div class="heading student-city<%= sortBy == "city" ? (sortOrder == "DESC" ? " desc" : " asc") : "" %>"><a href="/students?sortby=city&sortorder=<%= sortOrder == "DESC" ? "asc" : "desc" %>">City</a></div>
                     <div class="heading student-courses">Courses</div>
                     <div class="heading student-edit">Admin</div>
                 </div>
@@ -18,7 +18,7 @@
                     <div class="student-fname"><%= row.firstname %></div>
                     <div class="student-lname"><%= row.lastname %></div>
                     <div class="student-city"><%= row.city %></div>
-                    <div class="student-courses"><%- ( row.courses ? row.courses.replace(",", "<br>") : " - ") %></div>
+                    <div class="student-courses"><%- ( row.courses ? row.courses.replaceAll(",", "<br>") : " - ") %></div>
                     <div class="student-edit">
                         <button name="edit" value="<%= row.id %>"><img src="./images/icon-edit.png" alt="Edit student"></button>
                         <button name="delete" value="<%= row.id %>"><img src="./images/icon-delete.png" alt="Delete student"></button>

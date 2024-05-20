@@ -20,9 +20,13 @@ clientRoutes.get("/", async (req, res) => {
 
 // Build page for managing students
 clientRoutes.get("/students", async (req, res) => {
+    const sortOptions = ['firstname', 'lastname', 'city'];
+    const sortBy = (req.query.sortby && sortOptions.includes(req.query.sortby) ? req.query.sortby : "lastname");
+    const sortOrder = (req.query.sortorder && req.query.sortorder == 'desc' ? "DESC" : "ASC");
     const pageTitle = "Students";
 
-    const [studentRows] = await db.query(`
+    const values = [];
+    let sql = (`
         SELECT 
             s.id, 
             s.firstname, 
@@ -33,11 +37,12 @@ clientRoutes.get("/students", async (req, res) => {
             students s 
             LEFT JOIN students_courses sc ON (s.id = sc.student_id) 
             LEFT JOIN courses c ON (c.id = sc.course_id)
-        GROUP BY s.id 
-        ORDER BY s.lastname ASC
+        GROUP BY s.id
+        ORDER BY s.${sortBy} ${sortOrder}
     `);
 
-    res.render("students", { pageTitle, studentRows });
+    const [studentRows] = await db.query(sql);
+    res.render("students", { pageTitle, studentRows, sortBy, sortOrder });
 });
 
 

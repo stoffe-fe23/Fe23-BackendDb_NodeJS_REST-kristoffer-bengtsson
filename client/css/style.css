@@ -32,6 +32,17 @@ header > div {
     font-weight: 900;
 }
 
+.headerlogo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo {
+    max-height: 50px;
+    height: auto;
+}
+
 main {
     width: 100%;
     max-width: 1280px;
@@ -405,4 +416,22 @@ nav a.current:hover {
 
 #create-course-form textarea {
     min-width: 270px;
+}
+
+.table-header a {
+    color: white;
+    text-decoration: none;
+}
+
+.table-header div.asc a,
+.table-header div.desc a {
+    color: yellow;
+}
+
+.table-header div.asc a::after {
+    content: ' ▲';
+}
+
+.table-header div.desc a::after {
+    content: ' ▼';
 }
