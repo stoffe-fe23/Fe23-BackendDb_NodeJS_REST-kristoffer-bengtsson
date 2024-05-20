@@ -154,6 +154,9 @@ nav a.current:hover {
 }
 
 .student-edit button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border: 0;
     background-color: black;
     color: white;
@@ -213,6 +216,7 @@ nav a.current:hover {
     background-color: lightgray;
     padding: 1rem;
     margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 #student-edit-dialog {
@@ -434,4 +438,8 @@ nav a.current:hover {
 
 .table-header div.desc a::after {
     content: ' ▼';
+}
+
+.api-endpoint-lists li {
+    margin-bottom: 1.2rem;
 }

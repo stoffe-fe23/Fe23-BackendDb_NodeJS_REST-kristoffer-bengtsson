@@ -51,14 +51,12 @@ app.get("/init", (req, res) => {
     });
 });
 
-
 // General error handler
 app.use((err, req, res, next) => {
     console.log("ERROR: ", err);
     res.status(500);
     res.json({ error: err.message });
 })
-
 
 // Start the server on port 3000
 const server = app.listen(3000, () => {

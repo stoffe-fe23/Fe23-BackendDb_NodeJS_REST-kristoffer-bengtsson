@@ -3,7 +3,66 @@
     <%- include("parts/nav", {currentPage: "home"}) %>
     <main>
         <h1><%= pageTitle %></h1>
-        <p>Todo: API översikt</p>
+        <h3>API: Fetch data endpoints</h3>
+        <div class="api-endpoint-lists">
+            <ul>
+                <li>
+                    <h4>List of all students</h4>
+                    http://localhost:3000/api/students
+                </li>
+                <li>
+                    <h4>List of all courses</h4>
+                    http://localhost:3000/api/courses
+                </li>
+                <li>
+                    <h4>List of all courses with their associated students</h4>
+                    http://localhost:3000/api/courses/students
+                </li>
+                <li>
+                    <h4>Info (including their courses) about the student with the specified ID</h4>
+                    http://localhost:3000/api/student/get/[id]
+                </li>
+                <li>
+                    <h4>Filtered list of students with course info.</h4>
+                    http://localhost:3000/api/students/list?firstname=&lastname=&city<br>
+                    All filter parameters [firstname|lastname|city] are optional.
+                </li>
+                <li>
+                    <h4>List of courses filtered by specified criteria. </h4>
+                    http://localhost:3000/api/courses/filtered/id?filter=[filter string]
+                    <br>http://localhost:3000/api/courses/filtered/name?filter=[filter string]
+                    <br>http://localhost:3000/api/courses/filtered/name_contains?filter=[filter string]
+                    <br>http://localhost:3000/api/courses/filtered/desc_contains?filter=[filter string]
+                </li>
+            </ul>
+            <h3>API: Add/modify data endpoints</h3>
+            <ul>
+                <li>
+                    <h4>Add a new student to the system. POST request.</h4>
+                    http://localhost:3000/api/student/add<br><strong>POST fields:</strong> firstname, lastname, city (optional)
+                </li>
+                <li>
+                    <h4>Add a new course to the system. POST request.</h4>
+                    http://localhost:3000/api/course/add<br><strong>POST fields:</strong> name, description (optional)
+                </li>
+                <li>
+                    <h4>Add a student to a course.</h4>
+                    http://localhost:3000/api/course/student/add/:student/[courseId]
+                </li>
+                <li>
+                    <h4>Delete a student with the specified ID.</h4>
+                    http://localhost:3000/api/student/delete/[studentId]
+                </li>
+                <li>
+                    <h4>Delete a course with the specified ID.</h4>
+                    http://localhost:3000/api/course/delete/[courseId]
+                </li>
+                <li>
+                    <h4>Remove a student from a course with the specified student ID and course ID.</h4>
+                    http://localhost:3000/api/course/student/delete/[courseId]/[studentId]
+                </li>
+            </ul>
+        </div>
     </main>
 </body>
 <%- include("parts/footer"); %>

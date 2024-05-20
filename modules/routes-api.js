@@ -18,23 +18,36 @@ const apiRoutes = Router();
 /////////////////////////////////////////////////////////////////////////////////////////
 // Get a list of all students
 apiRoutes.get("/students", async (req, res) => {
-    const [studentList] = await db.query('SELECT * FROM `students` ORDER BY firstname ASC');
-    res.json(studentList);
+    try {
+        const [studentList] = await db.query('SELECT * FROM `students` ORDER BY firstname ASC');
+        res.json(studentList);
+    }
+    catch (error) {
+        res.status(400);
+        res.json({ error: "Error fetching student info.", status: error });
+    }
 });
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Get a list of all courses.
 apiRoutes.get("/courses", async (req, res) => {
-    const [courseList] = await db.query('SELECT * FROM `courses` ORDER BY name ASC');
-    res.json(courseList);
+    try {
+        const [courseList] = await db.query('SELECT * FROM `courses` ORDER BY name ASC');
+        res.json(courseList);
+    }
+    catch (error) {
+        res.status(400);
+        res.json({ error: "Error fetching student info.", status: error });
+    }
 });
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Get a list of all courses and their assigned students.
 apiRoutes.get("/courses/students", async (req, res) => {
-    const [coursesList] = await db.query(`
+    try {
+        const [coursesList] = await db.query(`
         SELECT 
             c.id, 
             c.name AS course, 
@@ -46,8 +59,13 @@ apiRoutes.get("/courses/students", async (req, res) => {
             LEFT JOIN students s ON (s.id = sc.student_id) 
         GROUP BY c.name 
         ORDER BY c.name ASC`
-    );
-    res.json(coursesList);
+        );
+        res.json(coursesList);
+    }
+    catch (error) {
+        res.status(400);
+        res.json({ error: "Error fetching student info.", status: error });
+    }
 });
 
 
@@ -85,35 +103,36 @@ apiRoutes.get("/student/get/:id", async (req, res) => {
 // Get filtered list of students (and their courses)
 // Filter params: fistname (optional), lastname (optional), city (optional)
 apiRoutes.get("/students/list", async (req, res) => {
-    let sql = `
-        SELECT 
-            s.*, 
-            JSON_REMOVE(JSON_OBJECTAGG(IFNULL(c.id, "null"), c.name), "$.null") AS courses 
-        FROM 
-            students s 
-            LEFT JOIN students_courses sc ON (s.id = sc.student_id) 
-            LEFT JOIN courses c ON (c.id = sc.course_id)`;
-    const values = [];
-
-    // Apply filters if set
-    if (req.query.firstname) {
-        sql += (values.length ? " AND " : " WHERE ") + `s.firstname = ?`;
-        values.push(req.query.firstname);
-    }
-
-    if (req.query.lastname) {
-        sql += (values.length ? " AND " : " WHERE ") + `s.lastname = ?`;
-        values.push(req.query.lastname);
-    }
-
-    if (req.query.city) {
-        sql += (values.length ? " AND " : " WHERE ") + `s.city LIKE ?`;
-        values.push(`%${req.query.city}%`);
-    }
-
-    sql += ` GROUP BY s.id`;
-
     try {
+        let sql = `
+            SELECT 
+                s.*, 
+                JSON_REMOVE(JSON_OBJECTAGG(IFNULL(c.id, "null"), c.name), "$.null") AS courses 
+            FROM 
+                students s 
+                LEFT JOIN students_courses sc ON (s.id = sc.student_id) 
+                LEFT JOIN courses c ON (c.id = sc.course_id)`;
+        const values = [];
+
+        // Apply filters if set
+        if (req.query.firstname) {
+            sql += (values.length ? " AND " : " WHERE ") + `s.firstname = ?`;
+            values.push(req.query.firstname);
+        }
+
+        if (req.query.lastname) {
+            sql += (values.length ? " AND " : " WHERE ") + `s.lastname = ?`;
+            values.push(req.query.lastname);
+        }
+
+        if (req.query.city) {
+            sql += (values.length ? " AND " : " WHERE ") + `s.city LIKE ?`;
+            values.push(`%${req.query.city}%`);
+        }
+
+        sql += ` GROUP BY s.id`;
+
+
         const [studentsInfo] = await db.execute(sql, values);
         res.json(studentsInfo);
     }
@@ -128,11 +147,11 @@ apiRoutes.get("/students/list", async (req, res) => {
 // Info about specific course by ID or Name (full or wildcard) or description (wildcard), with student list
 // Filter types: id, name, name_contains, desc_contains
 // filter: string depending on FilterType
-apiRoutes.get("/courses/filtered/:filterType/", async (req, res) => {
+apiRoutes.get("/courses/filtered/:filterType", async (req, res) => {
     const filterTypes = ['id', 'name', 'name_contains', 'desc_contains'];
-
     if (req.params.filterType && filterTypes.includes(req.params.filterType)) {
-        let sql = `
+        try {
+            let sql = `
             SELECT 
                 c.*, 
                 JSON_REMOVE(JSON_OBJECTAGG(IFNULL(s.id, "null"), CONCAT(s.firstname, " ", s.lastname)), "$.null") AS students 
@@ -140,34 +159,34 @@ apiRoutes.get("/courses/filtered/:filterType/", async (req, res) => {
                 courses c 
                 LEFT JOIN students_courses sc ON (c.id = sc.course_id) 
                 LEFT JOIN students s ON (s.id = sc.student_id)`;
-        const values = [];
+            const values = [];
 
-        // If filter querystring parameter is set, apply to query, otherwise show all. 
-        if (req.query.filter) {
-            sql += ` WHERE `;
-            switch (req.params.filterType) {
-                case 'id':
-                    sql += `c.id = ?`;
-                    values.push(req.query.filter);
-                    break;
-                case 'name':
-                    sql += `c.name = ?`;
-                    values.push(req.query.filter);
-                    break;
-                case 'name_contains':
-                    sql += `c.name LIKE ?`;
-                    values.push(`%${req.query.filter}%`);
-                    break;
-                case 'desc_contains':
-                    sql += `c.description LIKE ?`;
-                    values.push(`%${req.query.filter}%`);
-                    break;
+            // If filter querystring parameter is set, apply to query, otherwise show all. 
+            if (req.query.filter) {
+                sql += ` WHERE `;
+                switch (req.params.filterType) {
+                    case 'id':
+                        sql += `c.id = ?`;
+                        values.push(req.query.filter);
+                        break;
+                    case 'name':
+                        sql += `c.name = ?`;
+                        values.push(req.query.filter);
+                        break;
+                    case 'name_contains':
+                        sql += `c.name LIKE ?`;
+                        values.push(`%${req.query.filter}%`);
+                        break;
+                    case 'desc_contains':
+                        sql += `c.description LIKE ?`;
+                        values.push(`%${req.query.filter}%`);
+                        break;
+                }
             }
-        }
 
-        sql += ` GROUP BY c.id`;
+            sql += ` GROUP BY c.id`;
 
-        try {
+
             const [coursesInfo] = await db.execute(sql, values);
             res.json(coursesInfo);
         }
@@ -190,14 +209,14 @@ apiRoutes.get("/courses/filtered/:filterType/", async (req, res) => {
 /////////////////////////////////////////////////////////////////////////////////////////
 // Add a new student to the database. 
 // Params: firstname, lastname, city (optional)
-apiRoutes.get("/student/add", async (req, res) => {
-    if (req.query.firstname && req.query.lastname) {
+apiRoutes.post("/student/add", async (req, res) => {
+    if (req.body.firstname && req.body.lastname) {
         try {
             const [result] = await db.execute(
                 `INSERT INTO students (firstname, lastname, city) VALUES (?, ?, ?)`,
-                [req.query.firstname, req.query.lastname, req.query.city ?? '']
+                [req.body.firstname, req.body.lastname, req.body.city ?? '']
             );
-            console.log("Add new student: ", req.query.firstname, req.query.lastname, req.query.city);
+            console.log("Add new student: ", req.body.firstname, req.body.lastname, req.body.city);
             res.json({ message: "Create new student.", status: result });
         }
         catch (error) {
@@ -215,14 +234,14 @@ apiRoutes.get("/student/add", async (req, res) => {
 /////////////////////////////////////////////////////////////////////////////////////////
 // Add a new course to the database. 
 // Params: name, description (optional)
-apiRoutes.get("/course/add", async (req, res) => {
+apiRoutes.post("/course/add", async (req, res) => {
     if (req.query.name) {
         try {
             const [result] = await db.execute(
                 `INSERT INTO courses (name, description) VALUES (?, ?)`,
-                [req.query.name, req.query.description ?? '']
+                [req.body.name, req.body.description ?? '']
             );
-            console.log("Add new course: ", req.query.name, req.query.description);
+            console.log("Add new course: ", req.body.name, req.body.description);
             res.json({ message: "Create new course.", status: result });
         }
         catch (error) {
@@ -239,15 +258,15 @@ apiRoutes.get("/course/add", async (req, res) => {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Add a course to a student. 
-// Params: student (id), course (id)
-apiRoutes.get("/course/student/add", async (req, res) => {
-    if (req.query.student && req.query.course) {
+// Params: student id, course id
+apiRoutes.get("/course/student/add/:student/:course", async (req, res) => {
+    if (req.body.student && req.body.course) {
         try {
             const [result] = await db.execute(
                 `INSERT INTO students_courses (student_id, course_id) VALUES (?, ?)`,
-                [req.query.student, req.query.course]
+                [req.params.student, req.params.course]
             );
-            console.log("Add student to course: ", req.query.student, req.query.course);
+            console.log("Add student to course: ", req.params.student, req.params.course);
             res.json({ message: "Add student to course.", status: result });
         }
         catch (error) {
