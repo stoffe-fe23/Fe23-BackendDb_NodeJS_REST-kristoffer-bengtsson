@@ -23,8 +23,10 @@
             <!-- Show info about selected course -->
             <% if (currentCourse.id > 0) { %>
             <div class="course-info">
-                <h2><%= currentCourse.name %></h2>
-                <div><%= currentCourse.description %></div>
+                <div class="course-info-namedesc">
+                    <h2><%= currentCourse.name %></h2>
+                    <div><%= currentCourse.description %></div>
+                </div>
                 <div class="course-info-students">
                     <h3>Course students</h3>
                     <div class="course-info-studentlist">
@@ -54,7 +56,7 @@
                         <% }); %>
                     </select>
                     <input type="hidden" name="course_id" value="<%= currentCourse.id %>">
-                    <button>Add student to course</button>
+                    <button><img src="./images/icon-add.png">Add to course</button>
                 </form>
             </div>
             <% } %>

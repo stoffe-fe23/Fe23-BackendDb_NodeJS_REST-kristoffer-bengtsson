@@ -1,3 +1,10 @@
+/*
+    Slutprojekt Backend Databaser (FE23 Grit Academy)
+    Kristoffer Bengtsson
+
+    main.js
+    Client-side javascript for the administration pages. Handle edit/delete form actions and dialog boxes. 
+*/
 const BASE_URL = "http://localhost:3000/";
 
 // Submit handler for the Edit and Delete student buttons

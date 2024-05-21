@@ -4,6 +4,7 @@
 
     routes-api.js
     Modules containing routes and logic for the API endpoints. 
+    All routes defined here are served under the /api path.
 */
 import { Router } from 'express';
 import db from "./db.js";
@@ -58,18 +59,24 @@ apiRoutes.get("/courses", async (req, res) => {
 apiRoutes.get("/courses/students", async (req, res) => {
     try {
         const [coursesList] = await db.query(`
-        SELECT 
-            c.id, 
-            c.name AS course, 
-            c.description, 
-            JSON_REMOVE(JSON_OBJECTAGG(IFNULL(s.id, "null"), CONCAT(s.firstname, " ", s.lastname)), "$.null") AS students 
-        FROM 
-            courses c 
-            LEFT JOIN students_courses sc ON (c.id = sc.course_id) 
-            LEFT JOIN students s ON (s.id = sc.student_id) 
-        GROUP BY c.name 
-        ORDER BY c.name ASC`
-        );
+            SELECT 
+                c.id, 
+                c.name AS course, 
+                c.description, 
+                JSON_REMOVE(
+                    JSON_OBJECTAGG(
+                        IFNULL(s.id, "null"), 
+                        CONCAT(s.firstname, " ", s.lastname)
+                    ), 
+                    "$.null"
+                ) AS students 
+            FROM 
+                courses c 
+                LEFT JOIN students_courses sc ON (c.id = sc.course_id) 
+                LEFT JOIN students s ON (s.id = sc.student_id) 
+            GROUP BY c.name 
+            ORDER BY c.name ASC
+        `);
         res.json(coursesList);
     }
     catch (error) {
@@ -87,7 +94,13 @@ apiRoutes.get("/student/get/:id", validateStudentId, handleValidationErrorAPI, a
             const [studentInfo] = await db.execute(`
                 SELECT 
                     s.*, 
-                    JSON_REMOVE(JSON_OBJECTAGG(IFNULL(c.id, "null"), c.name), "$.null") AS courses 
+                    JSON_REMOVE(
+                        JSON_OBJECTAGG(
+                            IFNULL(c.id, "null"), 
+                            c.name
+                        ), 
+                        "$.null"
+                    ) AS courses 
                 FROM 
                     students s 
                     LEFT JOIN students_courses sc ON (s.id = sc.student_id) 
@@ -117,7 +130,13 @@ apiRoutes.get("/students/list", async (req, res) => {
         let sql = `
             SELECT 
                 s.*, 
-                JSON_REMOVE(JSON_OBJECTAGG(IFNULL(c.id, "null"), c.name), "$.null") AS courses 
+                JSON_REMOVE(
+                    JSON_OBJECTAGG(
+                        IFNULL(c.id, "null"), 
+                        c.name
+                    ), 
+                    "$.null"
+                ) AS courses 
             FROM 
                 students s 
                 LEFT JOIN students_courses sc ON (s.id = sc.student_id) 
@@ -164,7 +183,13 @@ apiRoutes.get("/courses/filtered/:filterType", async (req, res) => {
             let sql = `
             SELECT 
                 c.*, 
-                JSON_REMOVE(JSON_OBJECTAGG(IFNULL(s.id, "null"), CONCAT(s.firstname, " ", s.lastname)), "$.null") AS students 
+                JSON_REMOVE(
+                    JSON_OBJECTAGG(
+                        IFNULL(s.id, "null"), 
+                        CONCAT(s.firstname, " ", s.lastname)
+                    ), 
+                    "$.null"
+                ) AS students 
             FROM 
                 courses c 
                 LEFT JOIN students_courses sc ON (c.id = sc.course_id) 
@@ -226,7 +251,6 @@ apiRoutes.post("/student/add", validateNewStudent, handleValidationErrorAPI, asy
                 `INSERT INTO students (firstname, lastname, city) VALUES (?, ?, ?)`,
                 [req.body.firstname, req.body.lastname, req.body.city ?? '']
             );
-            console.log("Add new student: ", req.body.firstname, req.body.lastname, req.body.city);
             res.json({ message: "Create new student.", status: result });
         }
         catch (error) {
@@ -251,7 +275,6 @@ apiRoutes.post("/course/add", validateNewCourse, handleValidationErrorAPI, async
                 `INSERT INTO courses (name, description) VALUES (?, ?)`,
                 [req.body.name, req.body.description ?? '']
             );
-            console.log("Add new course: ", req.body.name, req.body.description);
             res.json({ message: "Create new course.", status: result });
         }
         catch (error) {
@@ -276,7 +299,6 @@ apiRoutes.get("/course/student/add/:course/:student", validateAddCourseStudent, 
                 `INSERT INTO students_courses (student_id, course_id) VALUES (?, ?)`,
                 [req.params.student, req.params.course]
             );
-            console.log("Add student to course: ", req.params.student, req.params.course);
             res.json({ message: "Add student to course.", status: result });
         }
         catch (error) {
@@ -299,7 +321,6 @@ apiRoutes.delete("/student/delete/:id", validateDeleteStudent, handleValidationE
             const [linkResult] = await db.execute(`DELETE FROM students_courses WHERE student_id = ?`, [req.params.id]);
             const [studentResult] = await db.execute(`DELETE FROM students WHERE id = ?`, [req.params.id]);
 
-            console.log("Removing student: ", req.params.id);
             res.json({ message: `Delete student ID ${req.params.id}.`, status: { fromCourses: linkResult.affectedRows, deleted: studentResult.affectedRows } });
         }
         catch (error) {
@@ -322,7 +343,6 @@ apiRoutes.delete("/course/delete/:id", validateDeleteCourse, handleValidationErr
             const [linkResult] = await db.execute(`DELETE FROM students_courses WHERE course_id = ?`, [req.params.id]);
             const [courseResult] = await db.execute(`DELETE FROM courses WHERE id = ?`, [req.params.id]);
 
-            console.log("Removing course: ", req.params.id);
             res.json({ message: `Delete course ID ${req.params.id}.`, status: { numStudents: linkResult.affectedRows, deleted: courseResult.affectedRows } });
         }
         catch (error) {
@@ -344,7 +364,6 @@ apiRoutes.delete("/course/student/delete/:course_id/:student_id", validateRemove
         try {
             const [linkResult] = await db.execute(`DELETE FROM students_courses WHERE course_id = ? AND student_id = ?`, [req.params.course_id, req.params.student_id]);
 
-            console.log("Removing student from course: ", req.params.student_id, req.params.course_id);
             res.json({ message: `Remove student ID ${req.params.student_id} from course ID ${req.params.course_id}.`, status: linkResult.affectedRows });
         }
         catch (error) {

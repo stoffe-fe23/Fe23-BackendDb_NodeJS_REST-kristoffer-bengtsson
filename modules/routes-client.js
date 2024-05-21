@@ -134,7 +134,6 @@ clientRoutes.post("/student/add", validateNewStudent, handleValidationErrorPage,
                 `INSERT INTO students (firstname, lastname, city) VALUES (?, ?, ?)`,
                 [req.body.firstname, req.body.lastname, req.body.city]
             );
-            console.log("Add student: ", result.insertId, result.affectedRows);
         }
         res.redirect(`/students`);
     }
@@ -153,7 +152,6 @@ clientRoutes.post("/student/edit", validateEditStudent, handleValidationErrorPag
                 `UPDATE students SET firstname = ?, lastname = ?, city = ? WHERE id = ?`,
                 [req.body.firstname, req.body.lastname, req.body.city, req.body.id]
             );
-            console.log("Edit student: ", req.body.id, result.affectedRows);
         }
         res.redirect(`/students`);
     }
