@@ -7,6 +7,16 @@
 */
 import { Router } from 'express';
 import db from "./db.js";
+import {
+    handleValidationErrorAPI,
+    validateNewStudent,
+    validateNewCourse,
+    validateAddCourseStudent,
+    validateDeleteStudent,
+    validateDeleteCourse,
+    validateRemoveCourseStudent,
+    validateStudentId
+} from './validation.js';
 
 const apiRoutes = Router();
 
@@ -71,7 +81,7 @@ apiRoutes.get("/courses/students", async (req, res) => {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Get info about a specific student by ID, including their assigned courses. 
-apiRoutes.get("/student/get/:id", async (req, res) => {
+apiRoutes.get("/student/get/:id", validateStudentId, handleValidationErrorAPI, async (req, res) => {
     if (req.params.id) {
         try {
             const [studentInfo] = await db.execute(`
@@ -197,7 +207,7 @@ apiRoutes.get("/courses/filtered/:filterType", async (req, res) => {
     }
     else {
         res.status(400);
-        res.json({ error: "The course filter type must be one of: " + filterValues.join(", ") });
+        res.json({ error: "The course filter type must be one of: " + filterTypes.join(", ") });
     }
 });
 
@@ -209,7 +219,7 @@ apiRoutes.get("/courses/filtered/:filterType", async (req, res) => {
 /////////////////////////////////////////////////////////////////////////////////////////
 // Add a new student to the database. 
 // Params: firstname, lastname, city (optional)
-apiRoutes.post("/student/add", async (req, res) => {
+apiRoutes.post("/student/add", validateNewStudent, handleValidationErrorAPI, async (req, res) => {
     if (req.body.firstname && req.body.lastname) {
         try {
             const [result] = await db.execute(
@@ -234,8 +244,8 @@ apiRoutes.post("/student/add", async (req, res) => {
 /////////////////////////////////////////////////////////////////////////////////////////
 // Add a new course to the database. 
 // Params: name, description (optional)
-apiRoutes.post("/course/add", async (req, res) => {
-    if (req.query.name) {
+apiRoutes.post("/course/add", validateNewCourse, handleValidationErrorAPI, async (req, res) => {
+    if (req.body.name) {
         try {
             const [result] = await db.execute(
                 `INSERT INTO courses (name, description) VALUES (?, ?)`,
@@ -258,9 +268,9 @@ apiRoutes.post("/course/add", async (req, res) => {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Add a course to a student. 
-// Params: student id, course id
-apiRoutes.get("/course/student/add/:student/:course", async (req, res) => {
-    if (req.body.student && req.body.course) {
+// Params: course id, student id
+apiRoutes.get("/course/student/add/:course/:student", validateAddCourseStudent, handleValidationErrorAPI, async (req, res) => {
+    if (req.params.student && req.params.course) {
         try {
             const [result] = await db.execute(
                 `INSERT INTO students_courses (student_id, course_id) VALUES (?, ?)`,
@@ -283,7 +293,7 @@ apiRoutes.get("/course/student/add/:student/:course", async (req, res) => {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Remove a student from the database
-apiRoutes.get("/student/delete/:id", async (req, res) => {
+apiRoutes.delete("/student/delete/:id", validateDeleteStudent, handleValidationErrorAPI, async (req, res) => {
     if (req.params.id && (req.params.id > 0)) {
         try {
             const [linkResult] = await db.execute(`DELETE FROM students_courses WHERE student_id = ?`, [req.params.id]);
@@ -306,7 +316,7 @@ apiRoutes.get("/student/delete/:id", async (req, res) => {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Remove a course from the database
-apiRoutes.get("/course/delete/:id", async (req, res) => {
+apiRoutes.delete("/course/delete/:id", validateDeleteCourse, handleValidationErrorAPI, async (req, res) => {
     if (req.params.id && (req.params.id > 0)) {
         try {
             const [linkResult] = await db.execute(`DELETE FROM students_courses WHERE course_id = ?`, [req.params.id]);
@@ -328,8 +338,8 @@ apiRoutes.get("/course/delete/:id", async (req, res) => {
 });
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// Remove a course from the database
-apiRoutes.get("/course/student/delete/:course_id/:student_id", async (req, res) => {
+// Remove a student from a course
+apiRoutes.delete("/course/student/delete/:course_id/:student_id", validateRemoveCourseStudent, handleValidationErrorAPI, async (req, res) => {
     if (req.params.course_id && req.params.student_id && (req.params.course_id > 0) && (req.params.student_id > 0)) {
         try {
             const [linkResult] = await db.execute(`DELETE FROM students_courses WHERE course_id = ? AND student_id = ?`, [req.params.course_id, req.params.student_id]);

@@ -1,9 +1,11 @@
-<%- include("parts/header", {pageTitle}); %>
+<%- include("parts/header", {pageTitle: "Error"}); %>
 <body>
-    <%- include("parts/nav", {currentPage: "errors"}) %>
+    <%- include("parts/nav", {currentPage: "error"}) %>
     <main>
-        <h1><%= pageTitle %></h1>
-        <div><%= errorMessage %></div>
+        <div class="content">
+            <h1>An error has ocurred!</h1>
+            <div><%= errorMessage %></div>
+        </div>
     </main>
 </body>
 <%- include("parts/footer"); %>

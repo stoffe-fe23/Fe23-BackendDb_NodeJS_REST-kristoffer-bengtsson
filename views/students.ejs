@@ -2,48 +2,63 @@
 <body>
     <%- include("parts/nav", {currentPage: "students"}) %>
     <main>
-        <h1><%= pageTitle %></h1>
-        <div class="student-new">
-            <form id="student-new-form" name="studentnewform" method="POST" action="/student/add">
-                <div>
-                    <label for="new-student-fname">First name</label>
-                    <input type="text" name="firstname" id="new-student-fname" minlength="2" maxlength="30" required>
+        <div class="content">
+            <h1><%= pageTitle %></h1>
+            <div class="student-new">
+                <!-- Form for creating a new student -->
+                <form id="student-new-form" name="studentnewform" method="POST" action="/student/add">
+                    <div>
+                        <label for="new-student-fname">First name</label>
+                        <input type="text" name="firstname" id="new-student-fname" minlength="2" maxlength="30" required>
+                    </div>
+                    <div>
+                        <label for="new-student-lname">Last name</label>
+                        <input type="text" name="lastname" id="new-student-lname" minlength="2" maxlength="30" required>
+                    </div>
+                    <div>
+                        <label for="new-student-city">City</label>
+                        <input type="text" name="city" id="new-student-city" maxlength="40">
+                    </div>
+                    <button>Add new student</button>
+                </form>
+            </div>
+            <!-- List of students, form for edit/delete buttons -->
+            <form id="student-admin-form">
+                <div class="student-list">
+                    <div class="student-row table-header">
+                        <div class="heading student-fname<%= sortBy == "firstname" ? (sortOrder == "DESC" ? " desc" : " asc") : "" %>"><a href="/students?sortby=firstname&sortorder=<%= sortOrder == "DESC" ? "asc" : "desc" %>">First name</a></div>
+                        <div class="heading student-lname<%= sortBy == "lastname" ? (sortOrder == "DESC" ? " desc" : " asc") : "" %>"><a href="/students?sortby=lastname&sortorder=<%= sortOrder == "DESC" ? "asc" : "desc" %>">Last name</a></div>
+                        <div class="heading student-city<%= sortBy == "city" ? (sortOrder == "DESC" ? " desc" : " asc") : "" %>"><a href="/students?sortby=city&sortorder=<%= sortOrder == "DESC" ? "asc" : "desc" %>">City</a></div>
+                        <div class="heading student-courses">Courses</div>
+                        <div class="heading student-edit">Edit</div>
+                    </div>
+                    <% studentRows.forEach( (row) => { %>
+                    <div class="student-row">
+                        <div class="student-fname"><%= row.firstname %></div>
+                        <div class="student-lname"><%= row.lastname %></div>
+                        <div class="student-city"><%= row.city %></div>
+                        <div class="student-courses">
+                            <% if (row.courses && row.courses.length) { %>
+                            <ul>
+                                <% row.courses.split(",").forEach( (course) => { %>
+                                <li><%= course %></li>
+                                <%}); %>
+                            </ul>
+                            <% } else { %>
+                            None
+                            <% } %>
+                        </div>
+                        <div class="student-edit">
+                            <button name="edit" value="<%= row.id %>"><img src="./images/icon-edit.png" alt="Edit student"></button>
+                            <button name="delete" value="<%= row.id %>"><img src="./images/icon-delete.png" alt="Delete student"></button>
+                        </div>
+                    </div>
+                    <% }); %>
                 </div>
-                <div>
-                    <label for="new-student-lname">Last name</label>
-                    <input type="text" name="lastname" id="new-student-lname" minlength="2" maxlength="30" required>
-                </div>
-                <div>
-                    <label for="new-student-city">City</label>
-                    <input type="text" name="city" id="new-student-city" maxlength="40">
-                </div>
-                <button>Add new student</button>
             </form>
         </div>
-        <form id="student-admin-form">
-            <div class="student-list">
-                <div class="student-row table-header">
-                    <div class="heading student-fname<%= sortBy == "firstname" ? (sortOrder == "DESC" ? " desc" : " asc") : "" %>"><a href="/students?sortby=firstname&sortorder=<%= sortOrder == "DESC" ? "asc" : "desc" %>">First name</a></div>
-                    <div class="heading student-lname<%= sortBy == "lastname" ? (sortOrder == "DESC" ? " desc" : " asc") : "" %>"><a href="/students?sortby=lastname&sortorder=<%= sortOrder == "DESC" ? "asc" : "desc" %>">Last name</a></div>
-                    <div class="heading student-city<%= sortBy == "city" ? (sortOrder == "DESC" ? " desc" : " asc") : "" %>"><a href="/students?sortby=city&sortorder=<%= sortOrder == "DESC" ? "asc" : "desc" %>">City</a></div>
-                    <div class="heading student-courses">Courses</div>
-                    <div class="heading student-edit">Admin</div>
-                </div>
-                <% studentRows.forEach( (row) => { %>
-                <div class="student-row">
-                    <div class="student-fname"><%= row.firstname %></div>
-                    <div class="student-lname"><%= row.lastname %></div>
-                    <div class="student-city"><%= row.city %></div>
-                    <div class="student-courses"><%- ( row.courses ? row.courses.replaceAll(",", "<br>") : " - ") %></div>
-                    <div class="student-edit">
-                        <button name="edit" value="<%= row.id %>"><img src="./images/icon-edit.png" alt="Edit student"></button>
-                        <button name="delete" value="<%= row.id %>"><img src="./images/icon-delete.png" alt="Delete student"></button>
-                    </div>
-                </div>
-                <% }); %>
-            </div>
-        </form>
     </main>
+    <!-- Dialog box with form for editing a student -->
     <dialog id="student-edit-dialog">
         <h2>Edit student</h2>
         <form id="student-edit-form" method="POST" action="/student/edit">

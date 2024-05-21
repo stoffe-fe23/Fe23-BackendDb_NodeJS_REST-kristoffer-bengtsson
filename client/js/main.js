@@ -22,7 +22,7 @@ if (studentAdminButtons) {
         else if (event.submitter.name == "delete") {
             if (confirm("Are you sure you wish to remove this student?")) {
                 const url = new URL(`${BASE_URL}api/student/delete/${event.submitter.value}`);
-                const response = await fetch(url);
+                const response = await fetch(url, { method: "DELETE" });
                 const result = await response.json();
                 if (result.status.deleted == 1) {
                     window.location.href = "/students";
@@ -62,7 +62,7 @@ if (deleteCourseButton) {
     deleteCourseButton.addEventListener("click", async (event) => {
         if (confirm("Are you sure you wish to delete this course?")) {
             const url = new URL(`${BASE_URL}api/course/delete/${event.currentTarget.value}`);
-            const response = await fetch(url);
+            const response = await fetch(url, { method: "DELETE" });
             const result = await response.json();
             if (result.status.deleted == 1) {
                 window.location.href = "/courses";

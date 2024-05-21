@@ -8,8 +8,9 @@ body {
     background-color: rgba(240, 240, 240, 1);
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
+    min-height: 100vh;
 }
 
 ::backdrop {
@@ -44,15 +45,25 @@ header > div {
 }
 
 main {
+    flex-grow: 1;
     width: 100%;
     max-width: 1280px;
+}
+
+.content {
     background-color: white;
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
     padding: 2rem;
 }
 
 footer {
+    display: flex;
+    justify-content: center;
+    width: 100%;
     margin-top: 3rem;
+    background-color: black;
+    color: white;
+    padding: 1rem;
 }
 
 h1 {
@@ -131,19 +142,23 @@ nav a.current:hover {
 
 .student-lname {
     grid-area: student-lname;
-    background-color: grey;
+    background-color: lightgrey;
     min-width: 6rem;
 }
 
 .student-city {
     grid-area: student-city;
-    background-color: lightblue;
+    background-color: darkgrey;
 }
 
 .student-courses {
     grid-area: student-courses;
     background-color: lightgray;
     font-size: 0.9em;
+}
+
+.student-courses ul {
+    margin: 0;
 }
 
 .student-edit {
