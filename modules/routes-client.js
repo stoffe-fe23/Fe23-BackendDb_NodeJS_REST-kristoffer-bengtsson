@@ -14,6 +14,7 @@ import {
     validateEditStudent,
     validateRemoveCourseStudentPOST,
     validateNewCourse,
+    validateEditCourse,
     handleValidationErrorPage
 } from "./validation.js";
 
@@ -211,6 +212,24 @@ clientRoutes.post("/course/add", validateNewCourse, handleValidationErrorPage, a
         }
     }
     catch (error) {
+        res.render("errors", { errorMessage: error });
+    }
+});
+
+////////////////////////////////////////////////////////////////////////////////
+// FORM SUBMIT: Edit student
+clientRoutes.post("/course/edit", validateEditCourse, handleValidationErrorPage, async (req, res) => {
+    try {
+        if (req.body.id && (req.body.id > 0) && req.body.name && req.body.name.length) {
+            const [result] = await db.execute(
+                `UPDATE courses SET name = ?, description = ? WHERE id = ?`,
+                [req.body.name, req.body.description, req.body.id]
+            );
+        }
+        res.redirect(`/courses?id=${req.body.id}`);
+    }
+    catch (error) {
+        console.log("Error: ", error);
         res.render("errors", { errorMessage: error });
     }
 });

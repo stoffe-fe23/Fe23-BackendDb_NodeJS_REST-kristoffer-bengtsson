@@ -29,23 +29,24 @@ const apiRoutes = Router();
  *************************************************************************************/
 
 // Generate an access token for testing... 
-apiRoutes.post("/get-test-token", (req, res) => {
-    // Hardcoded for now, just for testing. This would be behind login normally. 
-    const user = { username: "Admin" };
-    const token = jwt.sign(user, process.env.AUTH_TOKEN_ACCESS);
+// Hardcoded user for now, just for testing. This would be behind an authenticated user login normally. 
+apiRoutes.post("/get-auth-token", (req, res) => {
+    // Login data: req.body.username, req.body.password
+    // TODO: Authenticate user
+
+    const user = { username: req.body.username };
+    const token = jwt.sign(user, process.env.AUTH_TOKEN_ACCESS, { expiresIn: '1h' });
     res.json({ accessToken: token });
 });
 
-// Generated token for testing: 
-// Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFkbWluIiwiaWF0IjoxNzE2Mjk1MDM0fQ._X_zN6B6hmR0w9Q_M8eAOqA3pOre9TkD8inBdGgvdJ4
 
-// Check if access token is provided
-function authAccessToken(req, res, next) {
+// Check if valid access token is provided
+function checkAccessToken(req, res, next) {
     const auth = req.headers["authorization"];
     if (auth) {
         const [bearer, token] = auth.split(" ");
 
-        if (!token) {
+        if (!token || !token.length) {
             return res.sendStatus(401);
         }
 
@@ -218,7 +219,7 @@ apiRoutes.get("/students/list", async (req, res) => {
 // Info about specific course by ID or Name (full or wildcard) or description (wildcard), with student list
 // Filter types: id, name, name_contains, desc_contains
 // filter: string depending on FilterType
-apiRoutes.get("/courses/filtered/:filterType", async (req, res) => {
+apiRoutes.get("/courses/list/:filterType", async (req, res) => {
     const filterTypes = ['id', 'name', 'name_contains', 'desc_contains'];
     if (req.params.filterType && filterTypes.includes(req.params.filterType)) {
         try {
@@ -238,7 +239,7 @@ apiRoutes.get("/courses/filtered/:filterType", async (req, res) => {
                 LEFT JOIN students s ON (s.id = sc.student_id)`;
             const values = [];
 
-            // If filter querystring parameter is set, apply to query, otherwise show all. 
+            // If the filter querystring parameter is set, apply to query, otherwise show all. 
             if (req.query.filter) {
                 sql += ` WHERE `;
                 switch (req.params.filterType) {
@@ -280,13 +281,13 @@ apiRoutes.get("/courses/filtered/:filterType", async (req, res) => {
 
 
 /*************************************************************************************
- * ENDPOINTS FOR ADDING / MODIFYING DATA
+ * ENDPOINTS FOR ADDING / MODIFYING DATA (requires bearer token auth)
  *************************************************************************************/
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Add a new student to the database. 
 // Params: firstname, lastname, city (optional)
-apiRoutes.post("/student/add", authAccessToken, validateNewStudent, handleValidationErrorAPI, async (req, res) => {
+apiRoutes.post("/student/add", checkAccessToken, validateNewStudent, handleValidationErrorAPI, async (req, res) => {
     if (req.body.firstname && req.body.lastname) {
         try {
             const [result] = await db.execute(
@@ -310,7 +311,7 @@ apiRoutes.post("/student/add", authAccessToken, validateNewStudent, handleValida
 /////////////////////////////////////////////////////////////////////////////////////////
 // Add a new course to the database. 
 // Params: name, description (optional)
-apiRoutes.post("/course/add", authAccessToken, validateNewCourse, handleValidationErrorAPI, async (req, res) => {
+apiRoutes.post("/course/add", checkAccessToken, validateNewCourse, handleValidationErrorAPI, async (req, res) => {
     if (req.body.name) {
         try {
             const [result] = await db.execute(
@@ -332,9 +333,9 @@ apiRoutes.post("/course/add", authAccessToken, validateNewCourse, handleValidati
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// Add a course to a student. 
-// Params: course id, student id
-apiRoutes.get("/course/student/add/:course/:student", authAccessToken, validateAddCourseStudent, handleValidationErrorAPI, async (req, res) => {
+// Add a student to a course.
+// Params: course (id), student (id)
+apiRoutes.get("/course/student/add/:course/:student", checkAccessToken, validateAddCourseStudent, handleValidationErrorAPI, async (req, res) => {
     if (req.params.student && req.params.course) {
         try {
             const [result] = await db.execute(
@@ -356,8 +357,8 @@ apiRoutes.get("/course/student/add/:course/:student", authAccessToken, validateA
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// Remove a student from the database
-apiRoutes.delete("/student/delete/:id", authAccessToken, validateDeleteStudent, handleValidationErrorAPI, async (req, res) => {
+// Remove a student.
+apiRoutes.delete("/student/delete/:id", checkAccessToken, validateDeleteStudent, handleValidationErrorAPI, async (req, res) => {
     if (req.params.id && (req.params.id > 0)) {
         try {
             const [linkResult] = await db.execute(`DELETE FROM students_courses WHERE student_id = ?`, [req.params.id]);
@@ -378,8 +379,8 @@ apiRoutes.delete("/student/delete/:id", authAccessToken, validateDeleteStudent, 
 });
 
 /////////////////////////////////////////////////////////////////////////////////////////
-// Remove a course from the database
-apiRoutes.delete("/course/delete/:id", authAccessToken, validateDeleteCourse, handleValidationErrorAPI, async (req, res) => {
+// Remove a course.
+apiRoutes.delete("/course/delete/:id", checkAccessToken, validateDeleteCourse, handleValidationErrorAPI, async (req, res) => {
     if (req.params.id && (req.params.id > 0)) {
         try {
             const [linkResult] = await db.execute(`DELETE FROM students_courses WHERE course_id = ?`, [req.params.id]);
@@ -401,7 +402,7 @@ apiRoutes.delete("/course/delete/:id", authAccessToken, validateDeleteCourse, ha
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // Remove a student from a course
-apiRoutes.delete("/course/student/delete/:course_id/:student_id", authAccessToken, validateRemoveCourseStudent, handleValidationErrorAPI, async (req, res) => {
+apiRoutes.delete("/course/student/delete/:course_id/:student_id", checkAccessToken, validateRemoveCourseStudent, handleValidationErrorAPI, async (req, res) => {
     if (req.params.course_id && req.params.student_id && (req.params.course_id > 0) && (req.params.student_id > 0)) {
         try {
             const [linkResult] = await db.execute(`DELETE FROM students_courses WHERE course_id = ? AND student_id = ?`, [req.params.course_id, req.params.student_id]);

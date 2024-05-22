@@ -19,11 +19,11 @@
                     <div>http://localhost:3000/api/courses/students</div>
                 </li>
                 <li>
-                    <h4><span>GET</span>Info (including their courses) about the student with the specified ID</h4>
+                    <h4><span>GET</span>Info (including courses) about the student with the specified ID</h4>
                     <div>http://localhost:3000/api/student/get/<em>[id]</em></div>
                 </li>
                 <li>
-                    <h4><span>GET</span>Filtered list of students with course info</h4>
+                    <h4><span>GET</span>List of students with course info filtered by name and/or city</h4>
                     <div>http://localhost:3000/api/students/list?firstname=<em>[filter string]</em></div>
                     <div>http://localhost:3000/api/students/list?lastname=<em>[filter string]</em></div>
                     <div>http://localhost:3000/api/students/list?city=<em>[filter string]</em></div>
@@ -31,16 +31,19 @@
                     <div>http://localhost:3000/api/students/list?firstname=<em>Johan</em>&city=<em>Lund</em></div>
                 </li>
                 <li>
-                    <h4><span>GET</span>List of courses filtered by specified criteria</h4>
-                    <div>http://localhost:3000/api/courses/filtered/id?filter=<em>[filter string]</em></div>
-                    <div>http://localhost:3000/api/courses/filtered/name?filter=<em>[filter string]</em></div>
-                    <div>http://localhost:3000/api/courses/filtered/name_contains?filter=<em>[filter string]</em></div>
-                    <div>http://localhost:3000/api/courses/filtered/desc_contains?filter=<em>[filter string]</em></div>
+                    <h4><span>GET</span>List of courses filtered by id, name, partial name or partial description</h4>
+                    <div>http://localhost:3000/api/courses/list/id?filter=<em>[filter string]</em></div>
+                    <div>http://localhost:3000/api/courses/list/name?filter=<em>[filter string]</em></div>
+                    <div>http://localhost:3000/api/courses/list/name_contains?filter=<em>[filter string]</em></div>
+                    <div>http://localhost:3000/api/courses/list/desc_contains?filter=<em>[filter string]</em></div>
                     <br><strong>Example - get all courses where the description contains the word "javascript":</strong>
-                    <div>http://localhost:3000/api/courses/filtered/desc_contains?filter=<em>javascript</em></div>
+                    <div>http://localhost:3000/api/courses/list/desc_contains?filter=<em>javascript</em></div>
                 </li>
             </ul>
             <h3>API: Add/modify data endpoints</h3>
+            <div class="token-notice"><strong>Please note!</strong> The following API endpoints require requests to provide a bearer token for authorization. Use this token for testing:<br>
+                <span class="token">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFkbWluIiwiaWF0IjoxNzE2Mjk1MDM0fQ._X_zN6B6hmR0w9Q_M8eAOqA3pOre9TkD8inBdGgvdJ4</span>
+            </div>
             <ul>
                 <li>
                     <h4><span>POST</span>Add a new student to the system</h4>

@@ -28,6 +28,7 @@ export function handleValidationErrorPage(req, res, next) {
     try {
         const errorList = validationResult(req);
         if (!errorList.isEmpty()) {
+            console.log('Validation error', errorList.array());
             res.render("errors", { errorMessage: errorList.array() });
         }
         else {
@@ -75,7 +76,7 @@ export const validateNewCourse = [
         .isLength({ min: 2, max: 50 }).withMessage('The course name must be between 2-50 characters in length.').bail(),
     body("description")
         .optional({ checkFalsy: true })
-        .isString().withMessage('The city must be a text string.').bail()
+        .isString().withMessage('The description must be a text string.').bail()
         .isLength({ min: 0, max: 2000 }).withMessage('The course description can be at most 2000 characters in length.').bail()
 ];
 
@@ -198,6 +199,26 @@ export const validateEditStudent = [
         .optional({ checkFalsy: true })
         .isString().withMessage('The city must be a text string.').bail()
         .isLength({ min: 0, max: 40 }).withMessage('City must be at most 40 characters in length.').bail()
+];
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// Validate post data when editing a student
+// req.body.firstname, req.body.lastname, req.body.city, req.body.id
+export const validateEditCourse = [
+    body("id")
+        .exists().withMessage('The ID of the course to edit must be specified.').bail()
+        .trim().notEmpty().withMessage('A course ID to edit must be set.').bail()
+        .isInt({ gt: 0 }).withMessage('The course ID must be a number greater than 0.').bail(),
+    body("name")
+        .exists().withMessage('The course name must be specified.').bail()
+        .trim().notEmpty().withMessage('The course name must be set.').bail()
+        .isString().withMessage('The course name must be a text string.').bail()
+        .isLength({ min: 2, max: 50 }).withMessage('The course name must be between 2-50 characters in length.').bail(),
+    body("description")
+        .optional({ checkFalsy: true })
+        .isString().withMessage('The description must be a text string.').bail()
+        .isLength({ min: 0, max: 2000 }).withMessage('The course description can be at most 2000 characters in length.').bail()
 ];
 
 /*************************************************************************************

@@ -24,42 +24,52 @@
             <% if (currentCourse.id > 0) { %>
             <div class="course-info">
                 <div class="course-info-namedesc">
-                    <h2><%= currentCourse.name %></h2>
-                    <div><%= currentCourse.description %></div>
-                </div>
-                <div class="course-info-students">
-                    <h3>Course students</h3>
-                    <div class="course-info-studentlist">
-                        <% if(Object.keys(currentCourse.students).length > 0) { %>
-                        <!-- List of students in the course, form for Remove From Course button -->
-                        <form id="course-student-remove-form" method="POST" action="/course/student/remove">
-                            <% for (const studentId in currentCourse.students) { %>
-                            <div class="course-student-line">
-                                <div class="course-student-name"><%= currentCourse.students[studentId] %></div>
-                                <div class="course-student-button"><button name="student_id" value="<%= studentId %>"><img src="./images/icon-remove.png"></button></div>
-                            </div>
-                            <% } %>
-                            <input type="hidden" name="course_id" value="<%= currentCourse.id %>">
-                        </form>
-                        <% } else { %>
-                        <div class="no-course-students">No students in course.</div>
-                        <% } %>
+                    <div class="edit-wrapper">
+                        <h2 id="course-info-name"><%= currentCourse.name %></h2>
+                        <button id="course-info-name-save" value="edit">Edit</button>
+                        <button id="course-info-name-cancel" value="cancel" class="hide">Cancel</button>
+                    </div>
+
+                    <div class="edit-wrapper">
+                        <div id="course-info-desc"><%= currentCourse.description %></div>
+                        <button id="course-info-desc-save" value="edit">Edit</button>
+                        <button id="course-info-desc-cancel" value="cancel" class="hide">cancel</button>
                     </div>
                 </div>
             </div>
-            <div class="course-students-add">
-                <!-- Form for adding a new student to the selected course -->
-                <form id="course-students-add-form" action="/course/student/add" method="POST">
-                    <select name="student_id">
-                        <% studentList.forEach( (student) => { %>
-                        <option value="<%= student.id %>"><%= student.firstname %> <%= student.lastname %></option>
-                        <% }); %>
-                    </select>
-                    <input type="hidden" name="course_id" value="<%= currentCourse.id %>">
-                    <button><img src="./images/icon-add.png">Add to course</button>
-                </form>
+            <div class="course-info-students">
+                <h3>Course students</h3>
+                <div class="course-info-studentlist">
+                    <% if(Object.keys(currentCourse.students).length > 0) { %>
+                    <!-- List of students in the course, form for Remove From Course button -->
+                    <form id="course-student-remove-form" method="POST" action="/course/student/remove">
+                        <% for (const studentId in currentCourse.students) { %>
+                        <div class="course-student-line">
+                            <div class="course-student-name"><%= currentCourse.students[studentId] %></div>
+                            <div class="course-student-button"><button name="student_id" value="<%= studentId %>"><img src="./images/icon-remove.png"></button></div>
+                        </div>
+                        <% } %>
+                        <input type="hidden" name="course_id" value="<%= currentCourse.id %>">
+                    </form>
+                    <% } else { %>
+                    <div class="no-course-students">No students in course.</div>
+                    <% } %>
+                </div>
             </div>
-            <% } %>
+        </div>
+        <div class="course-students-add">
+            <!-- Form for adding a new student to the selected course -->
+            <form id="course-students-add-form" action="/course/student/add" method="POST">
+                <select name="student_id">
+                    <% studentList.forEach( (student) => { %>
+                    <option value="<%= student.id %>"><%= student.firstname %> <%= student.lastname %></option>
+                    <% }); %>
+                </select>
+                <input type="hidden" name="course_id" value="<%= currentCourse.id %>">
+                <button><img src="./images/icon-add.png">Add to course</button>
+            </form>
+        </div>
+        <% } %>
         </div>
     </main>
     <!-- Dialog box with form for adding a new course -->
