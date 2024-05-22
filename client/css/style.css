@@ -513,3 +513,15 @@ nav a.current:hover {
     width: 8ch;
     text-align: center;
 }
+
+@media print {
+
+    header,
+    footer {
+        display: none;
+    }
+
+    body {
+        background-color: transparent;
+    }
+}

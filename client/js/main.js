@@ -6,6 +6,8 @@
     Client-side javascript for the administration pages. Handle edit/delete form actions and dialog boxes. 
 */
 const BASE_URL = "http://localhost:3000/";
+const TEST_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkFkbWluIiwiaWF0IjoxNzE2Mjk1MDM0fQ._X_zN6B6hmR0w9Q_M8eAOqA3pOre9TkD8inBdGgvdJ4";
+
 
 // Submit handler for the Edit and Delete student buttons
 const studentAdminButtons = document.querySelector("#student-admin-form");
@@ -29,7 +31,12 @@ if (studentAdminButtons) {
         else if (event.submitter.name == "delete") {
             if (confirm("Are you sure you wish to remove this student?")) {
                 const url = new URL(`${BASE_URL}api/student/delete/${event.submitter.value}`);
-                const response = await fetch(url, { method: "DELETE" });
+                const response = await fetch(url, {
+                    method: "DELETE",
+                    headers: {
+                        'Authorization': 'Bearer ' + TEST_TOKEN
+                    }
+                });
                 const result = await response.json();
                 if (result.status.deleted == 1) {
                     window.location.href = "/students";
@@ -69,7 +76,12 @@ if (deleteCourseButton) {
     deleteCourseButton.addEventListener("click", async (event) => {
         if (confirm("Are you sure you wish to delete this course?")) {
             const url = new URL(`${BASE_URL}api/course/delete/${event.currentTarget.value}`);
-            const response = await fetch(url, { method: "DELETE" });
+            const response = await fetch(url, {
+                method: "DELETE",
+                headers: {
+                    'Authorization': 'Bearer ' + TEST_TOKEN
+                }
+            });
             const result = await response.json();
             if (result.status.deleted == 1) {
                 window.location.href = "/courses";

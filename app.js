@@ -21,7 +21,6 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
-
 app.use(cors());
 
 // EJS templates
@@ -57,6 +56,8 @@ app.use((err, req, res, next) => {
     res.status(500);
     res.json({ error: err.message });
 })
+
+
 
 // Start the server on port 3000
 const server = app.listen(3000, () => {
