@@ -1,3 +1,13 @@
+/*
+    Slutprojekt Backend Databaser (FE23 Grit Academy)
+    Kristoffer Bengtsson
+
+    validation.js
+    Modules with express-validator validation chains to check that user submitted data
+    is in the correct format and that involved IDs are in the expected state (e.g. relation does not
+    already exist and the specified student and course ID do exist, when adding a student-couse link).
+    )
+*/
 import db from "./db.js";
 import { body, param, check, validationResult } from "express-validator";
 
@@ -203,8 +213,8 @@ export const validateEditStudent = [
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-// Validate post data when editing a student
-// req.body.firstname, req.body.lastname, req.body.city, req.body.id
+// Validate post data when editing a course
+// req.body.name, req.body.description, req.body.id
 export const validateEditCourse = [
     body("id")
         .exists().withMessage('The ID of the course to edit must be specified.').bail()
