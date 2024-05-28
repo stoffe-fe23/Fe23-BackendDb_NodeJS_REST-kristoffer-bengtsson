@@ -5,3 +5,4 @@ Simple school API for managing students and courses, with an administrative pane
 
 Developed using Node.JS and MySQL.
 
+Example database included for testing. Set database connection credentials in the .env file.
